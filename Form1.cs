@@ -9,7 +9,11 @@ namespace Blackjack
             InitializeComponent();
 
             game = new BlackjackLogic(DisplayMessage);
-            Load += async (sender, e) => await game.MainMenu();
+            Load += async (sender, e) =>
+            {
+                await game.MainMenu();
+                Application.Exit();
+            };
         }
 
         public void Form1_Load(object sender, EventArgs e)

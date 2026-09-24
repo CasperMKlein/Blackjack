@@ -4,9 +4,17 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 public class BlackjackLogic
 {
+    public enum MenuAction
+    {
+        Start,
+        Quit,
+        Invalid
+    }
     private int money = 1000;
     private int bet = 0;
     private Deck deck = new Deck();
+
+    private BlackjackRules rules = new BlackjackRules();
 
     private List<Hand> playerHand = new List<Hand>();
     private Hand dealerHand = new Hand();
@@ -15,296 +23,9 @@ public class BlackjackLogic
 
     private TaskCompletionSource<string> _inputTCS;
 
-    List<string> emotions = new List<string>
-{
-    "great sorrow",
-    "anguish",
-    "joy",
-    "happiness",
-    "delight",
-    "ecstasy",
-    "euphoria",
-    "bliss",
-    "contentment",
-    "satisfaction",
-    "gratitude",
-    "relief",
-    "hope",
-    "optimism",
-    "excitement",
-    "enthusiasm",
-    "anticipation",
-    "wonder",
-    "awe",
-    "admiration",
-    "love",
-    "affection",
-    "fondness",
-    "tenderness",
-    "adoration",
-    "devotion",
-    "compassion",
-    "empathy",
-    "sympathy",
-    "trust",
-    "belonging",
-    "connection",
-    "pride",
-    "confidence",
-    "courage",
-    "determination",
-    "inspiration",
-    "amusement",
-    "playfulness",
-    "curiosity",
-    "fascination",
-    "interest",
-    "serenity",
-    "peace",
-    "calm",
-    "tranquility",
-    "nostalgia",
-    "longing",
-    "yearning",
-    "desire",
-    "passion",
-    "infatuation",
-    "attraction",
-    "envy",
-    "jealousy",
-    "resentment",
-    "bitterness",
-    "hatred",
-    "loathing",
-    "disgust",
-    "contempt",
-    "anger",
-    "rage",
-    "fury",
-    "irritation",
-    "annoyance",
-    "frustration",
-    "exasperation",
-    "agitation",
-    "impatience",
-    "indignation",
-    "betrayal",
-    "disappointment",
-    "discouragement",
-    "despair",
-    "hopelessness",
-    "helplessness",
-    "grief",
-    "mourning",
-    "sadness",
-    "sorrow",
-    "melancholy",
-    "misery",
-    "loneliness",
-    "isolation",
-    "emptiness",
-    "heartbreak",
-    "regret",
-    "remorse",
-    "guilt",
-    "shame",
-    "embarrassment",
-    "humiliation",
-    "insecurity",
-    "self-doubt",
-    "inferiority",
-    "fear",
-    "terror",
-    "horror",
-    "dread",
-    "panic",
-    "anxiety",
-    "worry",
-    "apprehension",
-    "nervousness",
-    "unease",
-    "uncertainty",
-    "confusion",
-    "bewilderment",
-    "perplexity",
-    "disbelief",
-    "shock",
-    "surprise",
-    "astonishment",
-    "amazement",
-    "suspicion",
-    "distrust",
-    "skepticism",
-    "ambivalence",
-    "indifference",
-    "apathy",
-    "boredom",
-    "weariness",
-    "exhaustion",
-    "overwhelm",
-    "vulnerability",
-    "insecurity",
-    "exposure",
-    "alienation",
-    "disconnection",
-    "resignation",
-    "acceptance",
-    "forgiveness",
-    "reconciliation",
-    "reluctance",
-    "hesitation",
-    "doubt",
-    "conflict",
-    "tension",
-    "anticipation",
-    "eagerness",
-    "urgency",
-    "impatience",
-    "satisfaction",
-    "triumph",
-    "victory",
-    "accomplishment",
-    "fulfillment",
-    "empowerment",
-    "liberation",
-    "freedom",
-    "reassurance",
-    "security",
-    "safety",
-    "warmth",
-    "comfort",
-    "affection",
-    "appreciation",
-    "respect",
-    "reverence",
-    "humility",
-    "shyness",
-    "awkwardness",
-    "timidity",
-    "cautiousness",
-    "wariness",
-    "defensiveness",
-    "possessiveness",
-    "protectiveness",
-    "sympathy",
-    "pity",
-    "compassion",
-    "kindness",
-    "generosity",
-    "altruism",
-    "satisfaction",
-    "pride",
-    "vanity",
-    "arrogance",
-    "superiority",
-    "inferiority",
-    "ambition",
-    "motivation",
-    "drive",
-    "persistence",
-    "resilience",
-    "perseverance",
-    "defeat",
-    "failure",
-    "humiliation",
-    "desperation",
-    "franticness",
-    "restlessness",
-    "agitation",
-    "irritability",
-    "hostility",
-    "aggression",
-    "vengeance",
-    "vindictiveness",
-    "malice",
-    "cruelty",
-    "spite",
-    "schadenfreude",
-    "reluctant hope",
-    "bittersweetness",
-    "melancholy",
-    "wistfulness",
-    "sentimentality",
-    "yearning",
-    "homesickness",
-    "estrangement",
-    "loss",
-    "grief",
-    "devastation",
-    "desolation",
-    "despair",
-    "anguish",
-    "torment",
-    "agony",
-    "suffering",
-    "distress",
-    "affliction",
-    "desperation",
-    "terror",
-    "existential dread",
-    "paranoia",
-    "foreboding",
-    "ominous anticipation",
-    "relief",
-    "reassurance",
-    "renewed hope",
-    "optimism",
-    "faith",
-    "trust",
-    "wonder",
-    "reverence",
-    "transcendence",
-    "spiritual awe",
-    "inner peace",
-    "serenity",
-    "contentment",
-    "acceptance",
-    "gratitude",
-    "joyful anticipation",
-    "ecstatic joy",
-    "overwhelming happiness",
-    "quiet happiness",
-    "profound sadness",
-    "deep loneliness",
-    "crushing disappointment",
-    "burning anger",
-    "consuming hatred",
-    "paralyzing fear",
-    "overwhelming anxiety",
-    "deep affection",
-    "unconditional love",
-    "profound gratitude",
-    "bittersweet nostalgia",
-    "quiet melancholy",
-    "restless curiosity",
-    "intense fascination",
-    "overwhelming awe",
-    "guilty pleasure",
-    "moral outrage",
-    "righteous indignation",
-    "quiet resentment",
-    "suppressed anger",
-    "hidden sadness",
-    "repressed fear",
-    "guarded optimism",
-    "cautious hope",
-    "desperate longing",
-    "unrequited love",
-    "forbidden desire",
-    "shattered trust",
-    "betrayed affection",
-    "emotional exhaustion",
-    "numbness",
-    "emotional detachment",
-    "emptiness",
-    "inner turmoil",
-    "emotional conflict",
-    "quiet desperation",
-    "overwhelming relief",
-    "unexpected joy",
-    "bittersweet joy",
-    "triumphant exhilaration"
-};
+    private Emotions emotions = new Emotions();
+
+
 
     public BlackjackLogic(Action<string> displayMessage)
     {
@@ -318,11 +39,12 @@ public class BlackjackLogic
         _inputTCS = null;
     }
 
-    private Task<string> RequestInputAsync()
+    public async Task<string> RequestInputAsync()
     {
         _inputTCS = new TaskCompletionSource<string>(
             TaskCreationOptions.RunContinuationsAsynchronously);
-        return _inputTCS.Task;
+
+        return await _inputTCS.Task;
     }
 
     public async Task MainMenu()
@@ -332,101 +54,26 @@ public class BlackjackLogic
 
         while (true)
         {
-            DisplayMessage("\nType 'start' to begin a new game, or 'exit' to quit.");
+            DisplayMessage("\nType 'start' to begin a new game, or 'quit' to quit.");
 
             string input = await RequestInputAsync();
-
-            if (input == "start")
+            switch (GetGameAction(input))
             {
-                await GameLoop();
-            }
-            else if (input == "exit")
-            {
-                System.Windows.Forms.Application.Exit();
-            }
-            else
-            {
-                DisplayMessage("\nInvalid command. Please type 'start' or 'exit'.");
+                case MenuAction.Start:
+                    await GameLoop();
+                    break;
+                case MenuAction.Quit:
+                    return;
+                default:
+                    DisplayMessage("\nInvalid command. Please type 'start' or 'quit'.");
+                    break;
             }
         }
     }
 
-    public int[] CardValue(Card card)
-    {
-        int[] values = new int[2]; // Array to hold possible values for Ace
 
 
-        switch (card.Rank)
-        {
-            case 'A':
-                values[0] = 1; // Ace as 1
-                values[1] = 11; // Ace as 11
-                break;
-            case 'K':
-            case 'Q':
-            case 'J':
-            case 'T':
-                values[0] = 10;
-                values[1] = 10;
-                break;
-            default:
-                values[0] = int.Parse(card.Rank.ToString());
-                values[1] = int.Parse(card.Rank.ToString());
-                break;
-        }
 
-        return values;
-    }
-
-    public List<int> HandValues(List<Card> hand)
-    {
-        List<int> handValues = new List<int> { 0 };
-
-        foreach (Card card in hand)
-        {
-            int[] cardValues = CardValue(card);
-            var currentCount = handValues.Count;
-            if (card.Rank == 'A')
-            {
-                for (int i = 0; i < currentCount; i++)
-                {
-                    handValues.Add(handValues[i] + cardValues[1]); // Add Ace as 11
-                    handValues[i] += cardValues[0]; // Add Ace as 1
-                }
-            }
-            else
-            {
-                for (int i = 0; i < currentCount; i++)
-                {
-                    handValues[i] += cardValues[0]; // Add card value
-                }
-            }
-        }
-
-        List<int> shortenedValues = new List<int>();
-        while (handValues.Count > 0)
-        {
-            int value = handValues[0];
-            handValues.RemoveAt(0);
-            if (!shortenedValues.Contains(value))
-            {
-                shortenedValues.Add(value);
-            }
-        }
-
-
-        return shortenedValues;
-    }
-
-    public bool IsBlackjack(List<int> handValues)
-    {
-        bool isBlackjack = false;
-        if (handValues.Contains(21))
-        {
-            isBlackjack = true;
-        }
-        return isBlackjack;
-    }
 
     public void DisplayHand(List<Card> hand)
     {
@@ -436,54 +83,62 @@ public class BlackjackLogic
         }
     }
 
-    public bool ContinueCheck()
+
+
+    public async Task<int> GetValidBet()
     {
-        foreach (var hand in playerHand)
+        DisplayMessage(
+            $"\nYou have ${money}. How much would you like to bet? " +
+            $"(Enter a number between 1 and {money})");
+
+        while (true)
         {
-            if (!hand.isDone && !hand.isBust && !hand.isBlackjack)
+            string input = await RequestInputAsync();
+
+            if (rules.TryGetValidBet(input, money, out int betAmount))
             {
-                return true;
+                return betAmount;
             }
+
+            DisplayMessage(
+                "\nInvalid bet. Please enter a valid amount.");
         }
-        return false;
     }
 
-    public async Task GetValidBet()
+    public MenuAction GetGameAction(string input)
     {
-        DisplayMessage($"\nYou have ${money}. How much would you like to bet? (Enter a number between 1 and {money})");
-        string betString = await RequestInputAsync();
-        if (int.TryParse(betString, out int betAmount) && betAmount > 0 && betAmount <= money)
-            {
-                bet = betAmount;
-            }
-            else
-            {
-                DisplayMessage("\nInvalid bet. Please enter a valid amount.");
-                await GetValidBet();
-            }
-    }
-
-    public async Task EndOfGameMenu()
-    {
-        string input = await RequestInputAsync();
-        switch (input)
+        input = input.ToLower().Trim();
+        return input switch
         {
-            case "start":
+            "start" => MenuAction.Start,
+            "quit" => MenuAction.Quit,
+            _ => MenuAction.Invalid
+        };
+    }
+
+    public MenuAction EndOfGameMenu(string input)
+    {
+        MenuAction endOfGameAction = GetGameAction(input);
+        switch (endOfGameAction)
+        {
+            case MenuAction.Start:
                 DisplayMessage("\nThe dealer shuffles the deck. Starting a new round...");
                 break;
-            case "quit":
-                DisplayMessage($"\nThe dealer points to the door. You leave with ${money} kr.");
-                System.Windows.Forms.Application.Exit();
+            case MenuAction.Quit:
+                DisplayMessage($"\nThe dealer points to the door. You leave with {money} kr.");
                 break;
             default:
-                DisplayMessage("\nInvalid command. Please type 'start' or 'quit'.");
-                await EndOfGameMenu();
+                    DisplayMessage("\nInvalid command. Please type 'start' or 'quit'.");
                 break;
         }
+        return endOfGameAction;
     }
+
+
 
     public async Task GameLoop()
     {
+        string input;
 
         await GetValidBet();
 
@@ -502,8 +157,8 @@ public class BlackjackLogic
         DisplayMessage($"\nDealer's visible card: {dealerHand.cards[0].Rank}{dealerHand.cards[0].Suit}");
 
 
-        playerHand.First().isBlackjack = IsBlackjack(HandValues(playerHand.First().cards));
-        dealerHand.isBlackjack = IsBlackjack(HandValues(dealerHand.cards));
+        playerHand.First().isBlackjack = rules.IsBlackjack(rules.HandValues(playerHand.First().cards));
+        dealerHand.isBlackjack = rules.IsBlackjack(rules.HandValues(dealerHand.cards));
 
         if (playerHand.First().isBlackjack)
         {
@@ -512,7 +167,7 @@ public class BlackjackLogic
 
 
 
-        while (ContinueCheck())
+        while (rules.HandCanContinue(playerHand))
         {
             DisplayMessage($"\nYour cards: ");
 
@@ -520,7 +175,7 @@ public class BlackjackLogic
             for (int i = 0; i < playerHand.Count; i++)
             {
                 var hand = playerHand[i];
-                if (ContinueCheck() && !hand.isDone && !hand.isBust && !hand.isBlackjack)
+                if (rules.HandCanContinue(playerHand) && !hand.isDone && !hand.isBust && !hand.isBlackjack)
                 {
                     DisplayHand(hand.cards);
                     string playerAction = await RequestInputAsync();
@@ -535,17 +190,17 @@ public class BlackjackLogic
                             DisplayMessage($"\nYour current hand has the cards and values: ");
                             string handCards = string.Join(" ", hand.cards.Select(c => $"{c.Rank}{c.Suit}"));
                             DisplayMessage(handCards);
-                            string handValues = string.Join(" ", HandValues(hand.cards));
+                            string handValues = string.Join(" ", rules.HandValues(hand.cards));
                             DisplayMessage($"({handValues})");
 
                             break;
                         case "stand":
                             hand.isDone = true;
                             DisplayMessage("\nYou chose to stand. This hand is no longer in play.");
-                            DisplayMessage($"\nFinal value of your hand: {string.Join(", ", HandValues(hand.cards))}");
+                            DisplayMessage($"\nFinal value of your hand: {string.Join(", ", rules.HandValues(hand.cards))}");
                             break;
                         case "split":
-                            if (hand.cards.Count == 2 && CardValue(hand.cards[0])[0] == CardValue(hand.cards[1])[0])
+                            if (rules.CanSplit(hand))
                             {
                                 Hand newHand = new Hand();
                                 newHand.cards.Add(hand.cards[1]);
@@ -568,12 +223,12 @@ public class BlackjackLogic
                             DisplayMessage($"\nYou chose to double down. You drew: {hand.cards.Last().Rank}{hand.cards.Last().Suit}");
                             break;
                     }
-                    if (HandValues(hand.cards).Min() > 21)
+                    if (rules.HandValues(hand.cards).Min() > 21)
                     {
                         hand.isBust = true;
                         DisplayMessage("\nHand busted!");
                     }
-                    else if (HandValues(hand.cards).Contains(21))
+                    else if (rules.HandValues(hand.cards).Contains(21))
                     {
                         hand.isDone = true;
                         DisplayMessage("\nYou got 21, hand is done! If you have more hands in play, they will be processed next.");
@@ -583,30 +238,28 @@ public class BlackjackLogic
         }
 
         DisplayMessage("\nAll player hands are done. Dealer's turn.");
-        Random random = new Random();
-        string dealerEmotionalState = this.emotions[random.Next(this.emotions.Count)];
-        DisplayMessage($"\nThe dealer reveals the second card with an expression of {dealerEmotionalState}! \nDealer's cards: {dealerHand.cards[0].Rank}{dealerHand.cards[0].Suit} {dealerHand.cards[1].Rank}{dealerHand.cards[1].Suit}");
-        while (HandValues(dealerHand.cards).Min() < 17)
+        DisplayMessage($"\nThe dealer reveals the second card with an expression of {emotions.EmotionalState()}! \nDealer's cards: {dealerHand.cards[0].Rank}{dealerHand.cards[0].Suit} {dealerHand.cards[1].Rank}{dealerHand.cards[1].Suit}");
+        while (rules.HandValues(dealerHand.cards).Min() < 17)
         {
             Card drawnCard = deck.DrawCard();
             dealerHand.cards.Add(drawnCard);
-            dealerEmotionalState = this.emotions[random.Next(this.emotions.Count)];
-            DisplayMessage($"\nPerhaps another card will give the dealer a sense of {dealerEmotionalState}!");
+            DisplayMessage($"\nPerhaps another card will give the dealer a sense of {emotions.EmotionalState()}!");
             DisplayMessage($"\nDealer draws: {drawnCard.Rank}{drawnCard.Suit}");
             DisplayMessage($"\nDealer's current hand: {string.Join(" ", dealerHand.cards.Select(c => $"{c.Rank}{c.Suit}"))}");
-            DisplayMessage($"\nDealer's current hand values: {string.Join(", ", HandValues(dealerHand.cards))}");
+            DisplayMessage($"\nDealer's current hand values: {string.Join(", ", rules.HandValues(dealerHand.cards))}");
         }
-        if (HandValues(dealerHand.cards).Min() > 21)
+        if (rules.HandValues(dealerHand.cards).Min() > 21)
         {
             dealerHand.isBust = true;
         }
-        int dealerBestValue = HandValues(dealerHand.cards).Where(v => v <= 21).DefaultIfEmpty(0).Max();
+        int dealerBestValue = rules.HandValues(dealerHand.cards).Where(v => v <= 21).DefaultIfEmpty(0).Max();
         if (dealerHand.isBlackjack)
         {
             DisplayMessage($"\nDealer's final hand: {string.Join(" ", dealerHand.cards.Select(c => $"{c.Rank}{c.Suit}"))}");
-            DisplayMessage($"\nDealer's final hand values: {string.Join(", ", HandValues(dealerHand.cards))}");
+            DisplayMessage($"\nDealer's final hand values: {string.Join(", ", rules.HandValues(dealerHand.cards))}");
             DisplayMessage($"\nDealer's best hand value: {dealerBestValue}");
-        } else if (dealerHand.isBust)
+        }
+        else if (dealerHand.isBust)
         {
             foreach (var hand in playerHand)
             {
@@ -629,7 +282,7 @@ public class BlackjackLogic
         {
             if (!hand.isBust && !dealerHand.isBust)
             {
-                int playerBestValue = HandValues(hand.cards).Where(v => v <= 21).DefaultIfEmpty(0).Max();
+                int playerBestValue = rules.HandValues(hand.cards).Where(v => v <= 21).DefaultIfEmpty(0).Max();
                 if (playerBestValue > dealerBestValue)
                 {
                     DisplayMessage($"\nYour hand with cards {string.Join(" ", hand.cards.Select(c => $"{c.Rank}{c.Suit}"))} wins against the dealer's hand!");
@@ -644,14 +297,18 @@ public class BlackjackLogic
                 }
             }
         }
-        dealerEmotionalState = this.emotions[random.Next(this.emotions.Count)];
-        DisplayMessage($"\nRound over. The dealer looks at you with {dealerEmotionalState} before giving you two options." +
+        DisplayMessage($"\nRound over. The dealer looks at you with {emotions.EmotionalState()} before giving you two options." +
             $"\nStart, to play again." +
             $"\nQuit, to stop where you are.");
 
-
-        await EndOfGameMenu();
-        await GameLoop();
+        MenuAction endOfGameAction;
+        do
+        {
+            input = await RequestInputAsync();
+            endOfGameAction = EndOfGameMenu(input);
+        } while (endOfGameAction == MenuAction.Invalid);
+        if (endOfGameAction == MenuAction.Start)
+            await GameLoop();
     }
 
 }
