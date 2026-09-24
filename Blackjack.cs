@@ -140,7 +140,8 @@ public class BlackjackLogic
     {
         string input;
 
-        await GetValidBet();
+        bet = await GetValidBet();
+        money = money - bet;
 
         playerHand.Clear();
         dealerHand.Clear();
@@ -210,6 +211,7 @@ public class BlackjackLogic
                                 DisplayMessage($"\nFirst hand: {hand.cards[0].Rank}{hand.cards[0].Suit}");
                                 DisplayMessage($"\nSecond hand: {newHand.cards[0].Rank}{newHand.cards[0].Suit}");
                                 DisplayMessage("\nYou will now play the first hand. After that, you will play the second hand. Enjoy!");
+                                money = money - bet;
                             }
                             else
                             {
@@ -221,6 +223,8 @@ public class BlackjackLogic
                             hand.cards.Add(deck.DrawCard());
                             hand.isDone = true;
                             DisplayMessage($"\nYou chose to double down. You drew: {hand.cards.Last().Rank}{hand.cards.Last().Suit}");
+                            money = money - bet;
+                            bet = bet * 2;
                             break;
                     }
                     if (rules.HandValues(hand.cards).Min() > 21)
@@ -286,6 +290,11 @@ public class BlackjackLogic
                 if (playerBestValue > dealerBestValue)
                 {
                     DisplayMessage($"\nYour hand with cards {string.Join(" ", hand.cards.Select(c => $"{c.Rank}{c.Suit}"))} wins against the dealer's hand!");
+                    money = money + bet * 2;
+                    if (hand.isBlackjack)
+                    {
+                        money = money + bet;
+                    }
                 }
                 else if (playerBestValue < dealerBestValue)
                 {
@@ -294,6 +303,7 @@ public class BlackjackLogic
                 else
                 {
                     DisplayMessage($"\nYour hand with cards {string.Join(" ", hand.cards.Select(c => $"{c.Rank}{c.Suit}"))} ties with the dealer's hand.");
+                    money = money + bet;
                 }
             }
         }

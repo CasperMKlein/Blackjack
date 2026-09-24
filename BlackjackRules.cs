@@ -34,6 +34,7 @@ public class BlackjackRules
 
         return values;
     }
+
     public List<int> HandValues(List<Card> hand)
     {
         List<int> handValues = new List<int> { 0 };
