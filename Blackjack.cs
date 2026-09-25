@@ -71,10 +71,6 @@ public class BlackjackLogic
         }
     }
 
-
-
-
-
     public void DisplayHand(List<Card> hand)
     {
         foreach (Card card in hand)
@@ -82,8 +78,6 @@ public class BlackjackLogic
             DisplayMessage($"{card.Rank}{card.Suit} ");
         }
     }
-
-
 
     public async Task<int> GetValidBet()
     {
@@ -133,8 +127,6 @@ public class BlackjackLogic
         }
         return endOfGameAction;
     }
-
-
 
     public async Task GameLoop()
     {
@@ -203,15 +195,7 @@ public class BlackjackLogic
                         case "split":
                             if (rules.CanSplit(hand))
                             {
-                                Hand newHand = new Hand();
-                                newHand.cards.Add(hand.cards[1]);
-                                hand.cards.RemoveAt(1);
-                                playerHand.Add(newHand);
-                                DisplayMessage("\nYou have split your hand into two hands.");
-                                DisplayMessage($"\nFirst hand: {hand.cards[0].Rank}{hand.cards[0].Suit}");
-                                DisplayMessage($"\nSecond hand: {newHand.cards[0].Rank}{newHand.cards[0].Suit}");
-                                DisplayMessage("\nYou will now play the first hand. After that, you will play the second hand. Enjoy!");
-                                money = money - bet;
+                                DisplayMessage(rules.Split(hand,playerHand,ref money,bet));
                             }
                             else
                             {
@@ -220,11 +204,7 @@ public class BlackjackLogic
                             }
                             break;
                         case "double":
-                            hand.cards.Add(deck.DrawCard());
-                            hand.isDone = true;
-                            DisplayMessage($"\nYou chose to double down. You drew: {hand.cards.Last().Rank}{hand.cards.Last().Suit}");
-                            money = money - bet;
-                            bet = bet * 2;
+                            DisplayMessage(rules.Double(ref money,ref bet,hand,deck));
                             break;
                     }
                     if (rules.HandValues(hand.cards).Min() > 21)

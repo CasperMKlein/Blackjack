@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data;
+using System.Data.SqlTypes;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 
 public class BlackjackRules
 {
@@ -109,6 +111,31 @@ public class BlackjackRules
 
         betAmount = 0;
         return false;
+    }
+
+
+    public string Double(ref int money, ref int bet, Hand hand, Deck deck)
+    {
+        hand.cards.Add(deck.DrawCard());
+        hand.isDone = true;
+        money = money - bet;
+        bet = bet * 2;
+        return $"\nYou chose to double down. You drew: {hand.cards.Last().Rank}{hand.cards.Last().Suit}";
+    }
+
+    public string Split(Hand hand, List<Hand> playerHand, ref int money, int bet)
+    {
+        string s = "";
+        Hand newHand = new Hand();
+        newHand.cards.Add(hand.cards[1]);
+        hand.cards.RemoveAt(1);
+        playerHand.Add(newHand);
+        money = money - bet;
+        s = "\nYou have split your hand into two hands." +
+            $"\nFirst hand: {hand.cards[0].Rank}{hand.cards[0].Suit}" +
+            $"\nSecond hand: {newHand.cards[0].Rank}{newHand.cards[0].Suit}" +
+            "\nYou will now play the first hand. After that, you will play the second hand. Enjoy!";
+        return s;
     }
 
 }
